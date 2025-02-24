@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Search } from "./components/Search";
 import { MovieCard } from "./components/MovieCard";
 import Spinner from "./components/Spinner";
+import { useDebounce } from "react-use";
 
 //API - Application programming interface - a set of rules that allows one software application to talk to another
 
@@ -21,6 +22,17 @@ function App() {
   const [errorMessage, seterrorMessage] = useState("");
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  //Debounce the search term to prevent making too many API calls
+
+  useDebounce(
+    () => {
+      setDebouncedSearchTerm(searchTerm);
+    },
+    500,
+    [searchTerm]
+  );
 
   const fetchMovies = async (query = "") => {
     setisLoading(true);
@@ -41,9 +53,8 @@ function App() {
   };
 
   useEffect(() => {
-    fetchMovies(searchTerm);
-    return () => {};
-  }, [searchTerm]);
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   return (
     <main>
