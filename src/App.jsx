@@ -31,7 +31,7 @@ function App() {
     () => {
       setDebouncedSearchTerm(searchTerm);
     },
-    500,
+    800,
     [searchTerm]
   );
 
