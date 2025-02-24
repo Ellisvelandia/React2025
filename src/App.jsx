@@ -3,6 +3,7 @@ import { Search } from "./components/Search";
 import { MovieCard } from "./components/MovieCard";
 import Spinner from "./components/Spinner";
 import { useDebounce } from "react-use";
+import { updateSearchCount } from "./appwrite";
 
 //API - Application programming interface - a set of rules that allows one software application to talk to another
 
@@ -43,7 +44,12 @@ function App() {
         : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
       const response = await fetch(enndpoint, API_OPTIONS);
       const data = await response.json();
-      setMovieList(data.results);
+
+      setMovieList(data.results || []);
+
+      if (query && data.results.length > 0) {
+        await updateSearchCount(query, data.results[0]);
+      }
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
       seterrorMessage(error.message);
